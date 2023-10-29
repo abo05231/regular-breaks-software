@@ -1,8 +1,12 @@
-#! -*- encoding=utf-8 -*-
+
 import shutil
 from PyQt5.QtGui import QPalette, QPixmap, QBrush, QIcon
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QSystemTrayIcon, QMenu, QAction, qApp, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QSystemTrayIcon, QMenu, QAction, qApp, QMessageBox, QWidget
 from PyQt5.QtCore import QTimer, Qt, QThread, QTime
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import (QApplication, QWidget, QGridLayout, QLineEdit, QLabel,)
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import time
 import sys
 import os
@@ -18,7 +22,7 @@ import getpass
 SEC = 60  # 定义每分几秒钟的常量
 interval = 0  # 定义间隔（分钟）
 rest = 0  # 休息时间（分钟）
-music_path = ''  # 储存播放音乐的目录
+music_path = ''
 settings = {'interval': 0, 'rest': 0, 'music_path': ''}
 flag = False  # 用来判断是否该结束线程，True为结束，结束后只剩下初始的主窗口线程
 # 一些有关开机自动启动的路径变量
@@ -26,7 +30,7 @@ user_name = getpass.getuser()  # 获取当前用户名
 target_path = 'C:\\Users\\' + user_name + '\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Eyes.lnk'
 path_created = 'C:\\Users\\' + user_name + '\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Eyes2.lnk'
 source_path = r'D:\code\python\PycharmProjects\pyqttest\dist\Eyes.exe'
-wDir = r'D:\code\python\PycharmProjects\pyqttest\dist'
+wDir = r'C:\Users\charming05231\Downloads\test\regular-breaks-software\sources'
 
 
 class MyPop(Eyes_pop_ui.Ui_MainWindow, QMainWindow):
@@ -277,17 +281,148 @@ class MyRest(QMainWindow, Eyes_ui.Ui_MainWindow):
         mytray.setVisible(False)
         e.accept()
 
+class MyWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle('my window')
+        
+        self.resize(600, 350)
+        gridlayout = QGridLayout()
+        self.setLayout(gridlayout)
+
+        grview = QtWidgets.QGraphicsView(self)  # 加入 QGraphicsView
+        grview.setGeometry(0, 0, 600, 350)
+        scene = QtWidgets.QGraphicsScene()            
+        img = QPixmap(wDir + r"\images\logo.png").scaled(300,200)                     # 建立圖片
+       
+        qitem1 = QtWidgets.QGraphicsPixmapItem(img)
+        scene.addItem(qitem1)
+        scene.setSceneRect(0, 50, 300, 200)
+        scene.addPixmap(img)
+        grview.setScene(scene)
+
+        self.mylabel = QLabel('Name:', self)
+        self.mylabel.setGeometry(150,250,100,20)
+        self.mylineedit = QLineEdit(self)
+        self.mylineedit.setGeometry(200,250,100,20)
+        
+        self.mylabel2 = QLabel('Password:', self)
+        self.mylabel2.setGeometry(150,300,100,20)
+        self.mylineedit2 = QLineEdit(self)
+        self.mylineedit2.setEchoMode(QLineEdit.Password)
+        self.mylineedit2.setGeometry(200,300,100,20)
+
+        self.btn = QtWidgets.QPushButton(self)
+        self.btn.setText('開啟新視窗')
+        self.btn.setStyleSheet('font-size:16px;')
+        self.btn.setGeometry(350,300,100,20)
+        self.btn.clicked.connect(self.showNewWindow)
+        """
+        palette = QPalette()  # 设置背景
+        palette.setBrush(self.backgroundRole(),
+                         QBrush(QPixmap(wDir + r"\images\logo.png").scaled(600,350)))
+        
+        self.setPalette(palette)"""
+
+    def showNewWindow(self):
+        self.hide()
+        self.nw = newWindow()       # 連接新視窗
+        self.nw.show()              # 顯示新視窗
+            
+class newWindow(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('oxxo.studio.2')
+        self.resize(600, 350)
+        self.ui()
+
+    def ui(self):
+
+        grview = QtWidgets.QGraphicsView(self)  # 加入 QGraphicsView
+        grview.setGeometry(0, 0, 600, 350)
+        scene = QtWidgets.QGraphicsScene()
+        scene.setSceneRect(100, 40, 300, 200)
+        img1 = QLabel(wDir + r"\images\Leg Stretch")         # 建立圖片
+        img2 = QLabel(wDir + r"\images\Neck Stretch")                     # 建立圖片
+        img3 = QLabel(wDir + r"\images\Shoulder Stretch")  
+        img = QPixmap(wDir + r"\images\Leg Stretch")                     # 建立圖片
+        qpainter = QPainter()
+        qpainter.begin(self)  
+        qimage = QImage(wDir + r"\images\Leg Stretch")
+        qpainter.drawImage(QRect(0, 0, 100, 150), qimage)
+        qpainter.drawImage(QRect(150, 30, 150, 150), qimage)
+        imgt = img.scaled(200,50)                     # 建立不同尺寸圖片
+        qitem1 = QtWidgets.QGraphicsPixmapItem(imgt)                   # 建立圖片  
+        img1 = img.scaled(200,50)                     # 建立不同尺寸圖片
+        qitem1 = QtWidgets.QGraphicsPixmapItem(img1)  # 設定 QItem，內容是 img1
+        img2 = img.scaled(100,150)                    # 建立不同尺寸圖片
+        qitem2 = QtWidgets.QGraphicsPixmapItem(img2)    
+        scene.addItem(qitem1)                         # 場景中加入 QItem
+        scene.addItem(qitem2)
+        grview.setScene(scene)
+
+        self.btn = QtWidgets.QPushButton(self)
+        self.btn.setText('Next')
+        self.btn.setStyleSheet('font-size:16px;')
+        self.btn.setGeometry(450,300,100,40)
+        self.btn.clicked.connect(self.showWindow1)
+
+        self.label_3 = QtWidgets.QLabel(self)
+        self.label_3.setGeometry(QtCore.QRect(30, 10, 511, 51))
+        font = QtGui.QFont()
+        font.setFamily("Constantia")
+        font.setPointSize(15)
+        font.setUnderline(False)
+        self.label_3.setFont(font)
+        self.label_3.setStyleSheet("color:brown")
+        self.label_3.setObjectName("label_3")
+        self.label_3.setText('You have chosen to receive notifications for every 1 Hour  ')
+
+
+    def showWindow1(self):
+        self.hide()
+        if not os.path.exists(target_path):  # 第一次启动程序时先创建一个快捷方式，当作basis
+            shell = Dispatch('WScript.Shell')
+            shortcut = shell.CreateShortCut(target_path)
+            shortcut.Targetpath = source_path
+            shortcut.WorkingDirectory = wDir
+            shortcut.save()
+        global myrest,mytray
+        myrest = MyRest()
+        mytray = MyTray()
+    # 读取用户上一次保存的数据并显示为默认值(第一次运行之前若没有json文件，则需手动创建json文件并存入初始数据)
+        with open(wDir + r'\settings.json', 'r') as f:
+            settings = json.load(f)
+        myrest.timeEdit.setTime(QTime(0, settings['interval']))
+        myrest.timeEdit_2.setTime(QTime(0, settings['rest']))
+        myrest.lineEdit.setText(settings['music_path'])
+
+        myrest.show()
+
+    # 若以快捷方式打开（命令行会传入'-minimized'参数），则隐藏到托盘，并自动开始Loop
+        if len(sys.argv) == 2 and sys.argv[1] == '-minimized':
+            myrest.hide()
+            myrest.pushButton.clicked.emit()
+
+        mytray.show()
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-
+    """
     if not os.path.exists(target_path):  # 第一次启动程序时先创建一个快捷方式，当作basis
         shell = Dispatch('WScript.Shell')
         shortcut = shell.CreateShortCut(target_path)
         shortcut.Targetpath = source_path
         shortcut.WorkingDirectory = wDir
         shortcut.save()
-
+    """
+    Logging = MyWidget()
+    Logging.show()
+    """
     myrest = MyRest()
     mytray = MyTray()
     # 读取用户上一次保存的数据并显示为默认值(第一次运行之前若没有json文件，则需手动创建json文件并存入初始数据)
@@ -305,5 +440,5 @@ if __name__ == '__main__':
         myrest.pushButton.clicked.emit()
 
     mytray.show()
-
+    """
     sys.exit(app.exec_())  # THE END. 指程序一直循环运行直到主窗口被关闭终止进程（如果没有这句话，程序运行时会一闪而过）
